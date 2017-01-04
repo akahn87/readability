@@ -1,7 +1,7 @@
 {
   "name": "node-readability",
-  "version": "2.2.0",
-  "author": "Zihua Li",
+  "version": "2.2.1",
+  "author": "Andy Kahn",
   "description": "Turning any web page into a clean view.",
   "homepage": "https://github.com/luin/node-readability",
   "repository": {
@@ -25,7 +25,8 @@
     "encoding": "~0.1.7",
     "jsdom": "^6.3.0",
     "minimist": "^1.2.0",
-    "request": "~2.40.0"
+    "request": "~2.40.0",
+    "unfluff": "^1.1.0"
   },
   "engines": {
     "node": ">= 2"

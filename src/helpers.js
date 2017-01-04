@@ -1,7 +1,7 @@
-var url = require("url");
+const url = require('url')
 
 // All of the regular expressions in use within readability.
-var regexps = {
+const regexps = {
   unlikelyCandidatesRe: /combx|modal|lightbox|comment|disqus|foot|header|menu|meta|nav|rss|shoutbox|sidebar|sponsor|social|teaserlist|time|tweet|twitter/i,
   okMaybeItsACandidateRe: /and|article|body|column|main|story|entry|^post/im,
   positiveRe: /article|body|content|entry|hentry|page|pagination|post|section|chapter|description|main|blog|text/i,
@@ -14,18 +14,17 @@ var regexps = {
   killBreaksRe: /(<br\s*\/?>(\s|&nbsp;?)*){1,}/g,
   videoRe: /http:\/\/(www\.)?(youtube|vimeo|youku|tudou|56|yinyuetai)\.com/i,
   attributeRe: /blog|post|article/i
-};
+}
 
-var dbg;
+let dbg
 exports.debug = function(debug) {
-  dbg = (debug) ? console.log : function() {};
-};
+  dbg = (debug) ? console.log : () => {}
+}
 
-var cleanRules = [];
-
-module.exports.setCleanRules = function(rules) {
-  cleanRules = rules;
-};
+let cleanRules = []
+exports.setCleanRules = function(rules) {
+  cleanRules = rules
+}
 
 /**
  * Prepare the HTML document for readability to scrape it.
@@ -33,49 +32,50 @@ module.exports.setCleanRules = function(rules) {
  *
  * @return void
  **/
-var prepDocument = module.exports.prepDocument = function(document) {
-  var frames = document.getElementsByTagName('frame');
-  if (frames.length > 0) {
-    var bestFrame = null;
-    var bestFrameSize = 0;
+const prepDocument = module.exports.prepDocument = document => {
+  const frames = document.getElementsByTagName('frame')
 
-    Array.prototype.slice.call(frames, 0).forEach(function(frame) {
-      var frameSize = frame.offsetWidth + frame.offsetHeight;
-      var canAccessFrame = false;
+  if (frames.length > 0) {
+    let bestFrame = null
+    let bestFrameSize = 0
+
+    Array.prototype.slice.call(frames, 0).forEach(frame => {
+      const frameSize = frame.offsetWidth + frame.offsetHeight
+      let canAccessFrame = false
       try {
-        frame.contentWindow.document.body;
-        canAccessFrame = true;
+        frame.contentWindow.document.body
+        canAccessFrame = true
       } catch (e) {}
 
       if (canAccessFrame && frameSize > bestFrameSize) {
-        bestFrame = frame;
-        bestFrameSize = frameSize;
+        bestFrame = frame
+        bestFrameSize = frameSize
       }
-    });
+    })
 
     if (bestFrame) {
-      var newBody = document.createElement('body');
-      newBody.innerHTML = bestFrame.contentWindow.document.body.innerHTML;
-      newBody.style.overflow = 'scroll';
-      document.body = newBody;
+      const newBody = document.createElement('body')
+      newBody.innerHTML = bestFrame.contentWindow.document.body.innerHTML
+      newBody.style.overflow = 'scroll'
+      document.body = newBody
 
-      var frameset = document.getElementsByTagName('frameset')[0];
+      const frameset = document.getElementsByTagName('frameset')[0]
       if (frameset) {
-        frameset.parentNode.removeChild(frameset);
+        frameset.parentNode.removeChild(frameset)
       }
     }
   }
-  
+
   // Strip out all <script> tags, as they *should* be useless
-  var scripts = document.getElementsByTagName('script');
-  [].forEach.call(scripts, function (node) {
-    node.parentNode.removeChild(node);
-  });
+  const scripts = document.getElementsByTagName('script')
+  Array.prototype.forEach.call(scripts, node => {
+    node.parentNode.removeChild(node)
+  })
 
   // turn all double br's into p's
   // note, this is pretty costly as far as processing goes. Maybe optimize later.
   // document.body.innerHTML = document.body.innerHTML.replace(regexps.replaceBrsRe, '</p><p>').replace(regexps.replaceFontsRe, '<$1span>');
-};
+}
 
 /***
  * grabArticle - Using a variety of metrics (content score, classname, element types), find the content that is
